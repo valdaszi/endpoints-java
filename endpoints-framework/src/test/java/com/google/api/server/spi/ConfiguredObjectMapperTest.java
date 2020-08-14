@@ -40,7 +40,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Map;
+import java.util.*;
 
 /** Unit tests for {@link ConfiguredObjectMapper}. */
 @RunWith(MockitoJUnitRunner.class)
@@ -75,6 +75,7 @@ public class ConfiguredObjectMapperTest {
   private static void doModuleSetup(Module module, String name) {
     when(module.getModuleName()).thenReturn(name);
     when(module.version()).thenReturn(Version.unknownVersion());
+    when(module.getDependencies()).thenReturn(Collections.emptyList());
   }
 
   @Test
