@@ -97,6 +97,8 @@ public final class TypeLoader {
         classLoader.loadClass("com.google.api.server.spi.types.DateAndTime"), "datetime");
     parameterTypes.put(
         classLoader.loadClass("com.google.api.server.spi.types.SimpleDate"), "date");
+    parameterTypes.put(classLoader.loadClass("java.time.LocalDateTime"), "datetime");
+    parameterTypes.put(classLoader.loadClass("java.time.LocalDate"), "date");
     try {
       parameterTypes.put(
           classLoader.loadClass("com.google.appengine.api.datastore.Blob"), "string");
@@ -129,6 +131,8 @@ public final class TypeLoader {
     schemaTypes.put(classLoader.loadClass("java.util.Date"), "string");
     schemaTypes.put(classLoader.loadClass("com.google.api.server.spi.types.DateAndTime"), "string");
     schemaTypes.put(classLoader.loadClass("com.google.api.server.spi.types.SimpleDate"), "string");
+    schemaTypes.put(classLoader.loadClass("java.time.LocalDateTime"), "string");
+    schemaTypes.put(classLoader.loadClass("java.time.LocalDate"), "string");
     schemaTypes.put(byte[].class, "string");
     try {
       schemaTypes.put(classLoader.loadClass("com.google.appengine.api.datastore.Blob"), "string");
@@ -150,6 +154,8 @@ public final class TypeLoader {
         classLoader.loadClass("com.google.api.server.spi.types.DateAndTime"), "date-time");
     schemaFormats.put(
         classLoader.loadClass("com.google.api.server.spi.types.SimpleDate"), "date");
+    schemaFormats.put(classLoader.loadClass("java.time.LocalDateTime"), "date-time");
+    schemaFormats.put(classLoader.loadClass("java.time.LocalDate"), "date");
     schemaFormats.put(byte[].class, "byte");
     try {
       schemaFormats.put(classLoader.loadClass("com.google.appengine.api.datastore.Blob"), "byte");

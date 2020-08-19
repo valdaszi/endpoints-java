@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
+import java.time.*;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +57,9 @@ public class ServletResponseResultWriter implements ResultWriter {
     modules.add(getWriteDateAsStringModule());
     modules.add(getWriteDateAndTimeAsStringModule());
     modules.add(getWriteSimpleDateAsStringModule());
+    modules.add(getWriteLocalDateAsStringModule());
+    modules.add(getWriteLocalDateTimeAsStringModule());
+
     try {
       // Attempt to load the Blob class, which may not exist outside of App Engine Standard.
       ServletResponseResultWriter.class.getClassLoader()
@@ -188,6 +192,33 @@ public class ServletResponseResultWriter implements ResultWriter {
     return writeSimpleDateAsModule;
   }
 
+  private static SimpleModule getWriteLocalDateAsStringModule() {
+    JsonSerializer<LocalDate> localDateSerializer = new JsonSerializer<LocalDate>() {
+      @Override
+      public void serialize(LocalDate value, JsonGenerator jgen, SerializerProvider provider)
+              throws IOException {
+        jgen.writeString(value.toString());
+      }
+    };
+    SimpleModule writeSimpleDateAsModule = new SimpleModule("writeSimpleDateAsModule",
+            new Version(1, 0, 0, null, null, null));
+    writeSimpleDateAsModule.addSerializer(LocalDate.class, localDateSerializer);
+    return writeSimpleDateAsModule;
+  }
+
+  private static SimpleModule getWriteLocalDateTimeAsStringModule() {
+    JsonSerializer<LocalDateTime> localDateTimeSerializer = new JsonSerializer<LocalDateTime>() {
+      @Override
+      public void serialize(LocalDateTime value, JsonGenerator jgen, SerializerProvider provider)
+              throws IOException {
+        jgen.writeString(value.toString());
+      }
+    };
+    SimpleModule writeSimpleDateAsModule = new SimpleModule("writeSimpleDateAsModule",
+            new Version(1, 0, 0, null, null, null));
+    writeSimpleDateAsModule.addSerializer(LocalDateTime.class, localDateTimeSerializer);
+    return writeSimpleDateAsModule;
+  }
 
   private static SimpleModule getWriteDateAsStringModule() {
     JsonSerializer<Date> dateSerializer = new JsonSerializer<Date>() {

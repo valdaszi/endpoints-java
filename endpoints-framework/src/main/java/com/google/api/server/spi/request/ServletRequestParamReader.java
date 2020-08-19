@@ -52,6 +52,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.time.*;
+import java.time.format.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,11 +89,13 @@ public class ServletRequestParamReader extends AbstractParamReader {
     SimpleModule simpleDateModule =
         new SimpleModule("simpleDateModule", new Version(1, 0, 0, null, null, null));
     simpleDateModule.addDeserializer(SimpleDate.class, new SimpleDateDeserializer());
+    dateModule.addDeserializer(LocalDate.class, new LocalDateDeserializer());
     modules.add(simpleDateModule);
 
     SimpleModule dateAndTimeModule =
         new SimpleModule("dateAndTimeModule", new Version(1, 0, 0, null, null, null));
     dateAndTimeModule.addDeserializer(DateAndTime.class, new DateAndTimeDeserializer());
+    dateAndTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
     modules.add(dateAndTimeModule);
 
     try {
@@ -270,6 +274,20 @@ public class ServletRequestParamReader extends AbstractParamReader {
     }
   }
 
+  private static class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+    @Override
+    public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext context)
+            throws IOException {
+      String value = jsonParser.readValueAs(String.class).trim();
+      try {
+        return LocalDateTime.parse(value);
+      } catch (DateTimeParseException e) {
+        throw new IllegalArgumentException(
+                "String is not an ISO date time: " + value);
+      }
+    }
+  }
+
   private static class SimpleDateDeserializer extends JsonDeserializer<SimpleDate> {
     Pattern pattern = Pattern.compile("^(\\d{4})-(\\d{2})-(\\d{2})$");
 
@@ -286,6 +304,26 @@ public class ServletRequestParamReader extends AbstractParamReader {
       } else {
         throw new IllegalArgumentException(
             "String is not an RFC3339 formated date (yyyy-mm-dd): " + value);
+      }
+    }
+  }
+
+  private static class LocalDateDeserializer extends JsonDeserializer<LocalDate> {
+    Pattern pattern = Pattern.compile("^(\\d{4})-(\\d{2})-(\\d{2})$");
+
+    @Override
+    public LocalDate deserialize(JsonParser jsonParser, DeserializationContext context)
+            throws IOException {
+      String value = jsonParser.readValueAs(String.class).trim();
+      Matcher matcher = pattern.matcher(value);
+      if (matcher.find()) {
+        int year = Integer.parseInt(matcher.group(1));
+        int month = Integer.parseInt(matcher.group(2));
+        int day = Integer.parseInt(matcher.group(3));
+        return LocalDate.of(year, month, day);
+      } else {
+        throw new IllegalArgumentException(
+                "String is not an RFC3339 formated date (yyyy-mm-dd): " + value);
       }
     }
   }
